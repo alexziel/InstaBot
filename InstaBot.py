@@ -44,3 +44,24 @@ class InstaBot:
         # time.sleep(2)
         # print("Clicked 'Not now' button.")
 
+    def like_photo(self, hashtag):
+        driver = self.driver
+        driver.get("https://www.instagram.com/explore/tags/" + hashtag + "/")
+        time.sleep(2)
+
+        # gathering photos
+        pic_hrefs = []
+        for i in range(1, 7):
+            try:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(2)
+                # get tags
+                hrefs_in_view = driver.find_elements_by_tag_name('a')
+                # finding relevant hrefs
+                hrefs_in_view = [elem.get_attribute('href') for elem in hrefs_in_view
+                                 if '.com/p/' in elem.get_attribute('href')]
+                # building list of unique photos
+                [pic_hrefs.append(href) for href in hrefs_in_view if href not in pic_hrefs]
+                print("Check: pic href length " + str(len(pic_hrefs)))
+            except Exception:
+                continue
