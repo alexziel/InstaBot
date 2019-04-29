@@ -39,10 +39,6 @@ class InstaBot:
         password_elem.send_keys(Keys.ENTER)
         time.sleep(2)
         print("Navigated to Instagram profile.")
-        # notnow_elem = driver.find_element_by_css_selector("button[class='aOOlW   HoLwm ']")
-        # notnow_elem.click()
-        # time.sleep(2)
-        # print("Clicked 'Not now' button.")
 
     def like_photo(self, hashtag):
         driver = self.driver
@@ -65,3 +61,42 @@ class InstaBot:
                 print("Check: pic href length " + str(len(pic_hrefs)))
             except Exception:
                 continue
+
+        # Liking photos
+        unique_photos = len(pic_hrefs)
+        for pic_href in pic_hrefs:
+            driver.get(pic_href)
+            time.sleep(2)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            try:
+                time.sleep(random.randint(2, 4))
+                like_button = lambda: driver.find_element_by_xpath('//span[@aria-label="Like"]').click()
+                like_button().click()
+                for second in reversed(range(0, random.randint(18, 28))):
+                    print_same_line("#" + hashtag + ': unique photos left: ' + str(unique_photos)
+                                    + " | Sleeping " + str(second))
+                    time.sleep(1)
+            except Exception as e:
+                time.sleep(2)
+            unique_photos -= 1
+
+if __name__ == "__main__":
+
+    username = "username"
+    password = "password"
+
+    ig = InstaBot(username, password)
+    ig.login()
+
+    hashtags = ['beauty', 'makeup', 'food']
+
+    while True:
+        try:
+            # Choose a random tag from the list of tags
+            tag = random.choice(hashtags)
+            ig.like_photo(tag)
+        except Exception:
+            ig.closeBrowser()
+            time.sleep(60)
+            ig = InstaBot(username, password)
+            ig.login()
